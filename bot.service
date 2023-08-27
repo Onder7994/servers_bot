@@ -1,0 +1,11 @@
+[Unit]
+Description=Telegram bot
+After=multi-user.target
+[Service]
+EnvironmentFile=/opt/bot/.env
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python3 /opt/bot/main.py
+[Install]
+WantedBy=multi-user.target
+
