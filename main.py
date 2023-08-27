@@ -10,6 +10,7 @@ current_date = datetime.datetime.now().date()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 VDSINA_API_TOKEN = os.environ.get("VDSINA_API_TOKEN")
 LOG_FILE = f"/var/log/{current_date}_vdsina_bot.txt"
+CHAT_ID = os.environ.get("CHAT_ID")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 logger = Logging("vdsina_bot", LOG_FILE)
@@ -31,7 +32,7 @@ def start(msg):
 
 @bot.callback_query_handler(func=lambda call:True)
 def callback(call):
-    if call.message:
+    if call.message and call.message.chat.id == int(CHAT_ID):
         if call.data == "help":
             bot.send_message(call.message.chat.id, "Для началы работы с ботом напишите /start")
         elif call.data == "balance_status":
@@ -60,6 +61,8 @@ def callback(call):
                 bot.register_next_step_handler(msg, get_servers_monitoring, servers_str, call.message.chat.id)
             else:
                 msg = bot.send_message(call.message.chat.id, "Пустой массив servers")
+    else:
+        bot.send_message(call.message.chat.id, "Это операция не разрешена для этого чата.")
 
 @bot.message_handler(content_types=["text"])
 def message_handler(m):
